@@ -56,7 +56,7 @@
 // 
 $models_path            = __DIR__ . '/../Models/';
 $model_ns               = 'Models\\';
-$db_file                = __DIR__ . '/../include/db/blabber.db';
+$db_file                = __DIR__ . '/../include/db/app.db';
 $db_connection_string   = "sqlite:$db_file";
 //
 // ***  END OF CONFIGURATION  *************************************************
