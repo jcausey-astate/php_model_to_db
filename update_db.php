@@ -121,7 +121,7 @@ foreach($models as $full_class_name){
         $OK = create_table($db, $table, $schema);
         
         if(!$OK){
-            print "Error creating table `$table`: " . $db->errorInfo();
+            print "Error creating table `$table`: " . $db->errorInfo()[2] . "\n";
         }
         else{
             print "Created table `$table` for model $full_class_name.\n";
@@ -183,7 +183,7 @@ foreach($models as $full_class_name){
                 print("   [~] Attempting automatic refactor.  ");
                 $tmptable = $table . "_tmp";
                 $cols     = implode(", ", $columns);
-                $db->exec("BEGIN TRANSACTION");
+                $db->beginTransaction();
                 // Refactor by creating a new table, copying in the data, dropping the old table, then re-naming the new one back to the original name.
                 $OK = create_table($db, $tmptable, $schema);
                 if($OK){
@@ -193,7 +193,7 @@ foreach($models as $full_class_name){
                         $res = NULL;
                         $OK  = FALSE;
                         // If moving the data fails, drop the temp table.
-                        $db->exec("ROLLBACK");
+                        $db->rollBack();
                     }
                     if($OK){
                         // Now drop the old table.
@@ -202,7 +202,7 @@ foreach($models as $full_class_name){
                             $res = NULL;
                             $OK  = FALSE;
                             // If dropping the old table fails, we need to drop the temp one:
-                            $db->exec("ROLLBACK");
+                            $db->rollBack();
                         }
                     }
                     if($OK){
@@ -210,14 +210,14 @@ foreach($models as $full_class_name){
                         $res = $db->exec("ALTER TABLE $tmptable RENAME TO $table");
                         if($res === FALSE){
                             $res = NULL;
-                            $db->exec("ROLLBACK");
+                            $db->rollBack();
                         }
                     }
                 }
                 // See if the refactor worked out.  If not, give an error message:
                 if($OK){
                     print "   [OK] \n";
-                    $db->exec("COMMIT");
+                    $db->commit();
                 }
                 else{
                     print "   [FAILED] \n";
