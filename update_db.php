@@ -4,7 +4,13 @@
  * 
  * This script updates a PDO-compliant database so that the tables match 
  * your data model as defined in a public static `schema` attribute of 
- * each of your PHP Model classes.  
+ * each of your PHP Model classes.
+ * 
+ * Table names are derived from class names by converting PHP-standard
+ * CapCase class names to database-friendly snake_case names; this is 
+ * the same algorithm used by the Paris framework: 
+ * (https://github.com/j4mie/paris), so this script is compatible with
+ * Paris (assuming the "_table_use_short_name" option is set to `true`).
  * 
  * The schema should be an associative array in which the name of
  * the column is the key and the SQL datatype and any constraints on the 
@@ -65,10 +71,10 @@ $db_connection_string   = "sqlite:$db_file";
  * creates a table given the schema as an associative array
  * where column names are keys and the values are types followed
  * by any necessary constraints
- * @param $db       PDO database handle
- * @param $table    string  name of the table to create
- * @param $schema   array of column names (keys) and type/constraint info (values)
- * @return boolean  TRUE if the table can be created, or FALSE otherwise
+ * @param  $db       PDO database handle
+ * @param  $table    string  name of the table to create
+ * @param  $schema   array of column names (keys) and type/constraint info (values)
+ * @return boolean   TRUE if the table can be created, or FALSE otherwise
  */
 function create_table($db, $table, $schema){
     $sql = "CREATE TABLE $table (";
@@ -91,6 +97,25 @@ function db_connect(){
     return new PDO($db_connection_string);
 }
 
+/**
+ * CapCase will be converted to snake_case table names,
+ * using the same algorithm as in the fantastic Paris framework:
+ * (https://github.com/j4mie/paris) 
+ * 
+ * Example: BookList would be converted to book_list.
+ * 
+ * @param  string   $class_name  the class name to convert
+ * @return string   the snake_case version of `$class_name`
+ */
+function cap_case_to_snake_case($class_name) {
+    return strtolower(preg_replace(
+        array('/(?<=[a-z])([A-Z])/', '/__/'),
+        array('_$1',                 '_'),
+        $class_name
+    ));
+}
+
+
 $directory   = new RecursiveDirectoryIterator($models_path);
 $iterator    = new RecursiveIteratorIterator($directory);
 $regex       = new RegexIterator($iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
@@ -112,7 +137,7 @@ $db = db_connect();
 
 foreach($models as $full_class_name){
     $class_name = str_replace($model_ns, '', $full_class_name);
-    $table      = strtolower($class_name);
+    $table      = cap_case_to_snake_case($class_name);
     $schema     = $full_class_name::$schema;
     $res        = $db->prepare("SELECT 1 FROM $table LIMIT 1");
     if($res === FALSE){
