@@ -43,16 +43,18 @@ In order to use this script, your Model classes must all be accessible within th
 
 ### Executing the Script
 
-```bash
-php update_db.php
-```
+`php update_db.php `&nbsp;_`[options]`_
+
+Where _`[options]`_ consist of:<br />
+&nbsp;&nbsp;&nbsp;`-d` or `--drop` :  Drop tables that are not required by any Model<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Warning: This cannot be undone!)   
+&nbsp;&nbsp;&nbsp;`-q` or `--quiet` : Reduced output   
+&nbsp;&nbsp;&nbsp;`-v` or `--verbose` :  More informative output
 
 The script will report success or failure, and attempt to give an indication of what went wrong if a failure occurs.
 
 ## Limitations
 
-The current version was designed to work with SQLite3 --- it HAS NOT
-been tested against any other DBMS at this point.
+The current version was designed to work with SQLite3 &mdash; it will not work with other DBMSs without major modifications.
 SQLite uses a restrictive version of SQL, so some operations could be
 done more efficiently for other DBMSs, but that wouldn't have worked
 for my application.  The roadmap would include future expansion to other
