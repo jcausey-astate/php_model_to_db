@@ -96,6 +96,7 @@ $db_type = explode(':', $db_connection_string)[0];
  */
 function main(){
     $raw_options = parse_options();
+    $options     = [];
     if(isset($raw_options['v']) || isset($raw_options['verbose'])){
         $options['verbosity'] = 2;
     }
@@ -126,6 +127,7 @@ function update_db($options=[]){
     $tables      = array();
     $model_ns_re = '/^' . addslashes($model_ns) . '/';
     $drop_extra  = FALSE;
+    $status      = TRUE;
 
     if(isset($options['verbosity'])){
         $vlevel = $options['verbosity'];
@@ -157,6 +159,7 @@ function update_db($options=[]){
             $OK = create_table($db, $table, $schema);
             if(!$OK){
                 vprint( "[!] Error creating table `$table`: " . $db->errorInfo()[2] . "\n", V_ERR);
+                $status = FALSE;
             }
             else{
                 vprint( "[+] Created table `$table` for model `$full_class_name`.\n");
@@ -231,6 +234,7 @@ function update_db($options=[]){
                     vprint( "    [FAILED]\n");
                     $msg = $db->errorInfo();
                     vprint( "       [i] " . $msg[2] . "\n");
+                    $status = FALSE;
                 }
                 else{
                     vprint( "    [OK]\n");
@@ -281,6 +285,7 @@ function update_db($options=[]){
                 }
                 else{
                     vprint( "   [FAILED]: " . $db->errorInfo()[2] . "\n");
+                    $status = FALSE;
                 }
             }        
             vprint( "\n");
@@ -298,6 +303,7 @@ function update_db($options=[]){
                 }
                 else{
                     vprint("[FAILED]" . $db->errorInfo()[2] . "\n");
+                    $status = FALSE;
                 }
             }
         }
