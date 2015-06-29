@@ -80,7 +80,7 @@ $db_connection_string   = "sqlite:$db_file";
 // ***  END OF CONFIGURATION  *************************************************
 // DO NOT EDIT BELOW THIS POINT ***********************************************
 
-$vlevel = 0;
+$vlevel = 1;
 define("V_ERR", 0);
 define("V_NOTE", 1);
 define("V_DBG", 2);
