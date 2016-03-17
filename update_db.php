@@ -80,6 +80,7 @@ $db_connection_string   = "sqlite:$db_file";
 // ***  END OF CONFIGURATION  *************************************************
 // DO NOT EDIT BELOW THIS POINT ***********************************************
 
+
 $vlevel = 1;
 define("V_ERR", 0);
 define("V_NOTE", 1);
@@ -136,13 +137,17 @@ function update_db($options=[]){
     if(isset($options['drop'])){
         $drop_extra = TRUE;
     }
-
+    
+    vprint( "[i] Searching in directory \"$models_path\" for models.\n", 2 );
+    
     foreach($regex as $k => $v){
+        vprint( "[i] Loading models from \"$k\".\n", 2);
         $before = get_declared_classes();
         include_once "$k";
         $after  = array_diff(get_declared_classes(), $before);
         foreach($after as $key => $class_name){
-            if(preg_match($model_ns_re, $class_name)){
+            if(is_subclass_of($class_name, "\Model") || ($model_ns != "" && $model_ns != "\\" && preg_match($model_ns_re, $class_name))){
+                vprint( "[i] Found model `$class_name`.\n", 2 );
                 array_push($models, $class_name);
             }
         }
