@@ -35,7 +35,7 @@ Example of `schema` attribute of a `Book` class:
 Before you can use the script, you need to set a few configuration options (located near the top of the script and clearly marked):
 
 * `$models_path` : The directory in which your Model classes are located.
-* `$model_ns`    : The PHP Namespace of your Model classes.
+* `$model_ns`    : The PHP Namespace of your Model classes; if you are not using namespaces, set this to `''`.  Note: This requires that your models extend a `Model` base class as in the Paris framework (https://github.com/j4mie/paris); you must do one or the other (use a Namespace or subclass `Model`).
 * `$db_file`     : The path and name of the file containing your (Sqlite3) database. _NOTE:_ If you are not using Sqlite, you may ignore this option.
 * `$db_connection_string` : PHP PDO-style connection string for your database.
 
